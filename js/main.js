@@ -1,86 +1,93 @@
+//top banner
 
-const TOP_BANNER = document.querySelector('.top_banner');
-const TOP_BANNER_BTN = document.querySelector('.top_banner i');
+const TOP_BANNER = document.querySelector('#header .topBanner');
+const TOP_BANNER_BTN = document.querySelector('#header i');
 
-const TOP_BANNER_CLOSE = () => {
+const MAIN_SLIDE_NAV = document.querySelector('#mainVisual .slide_nav');
+const MAIN_SLIDE_NAV_LI = document.querySelectorAll('#mainVisual .slide_nav>li');
+
+const MAIN_SLIDE_NUM = document.querySelector('#mainVisual .num');
+
+const TOP_BANNER_HANDLER = () => {
     TOP_BANNER.classList.add('on');
 }
 
-TOP_BANNER_BTN.addEventListener('click', TOP_BANNER_CLOSE);
+TOP_BANNER_BTN.addEventListener('click', TOP_BANNER_HANDLER);
 
-const TAB_MENU = document.querySelectorAll('.tab_menu>li');
-const TAB_CONTENT = document.querySelectorAll('.tab_content>li');
-// 유사배열로 html을 선택하였음.
-console.log(TAB_MENU);
-
-// TAB_MENU[0].addEventListener('click', function () {
-//     TAB_CONTENT[0].classList.add('on');
-//     TAB_CONTENT[1].classList.remove('on');
-//     TAB_CONTENT[2].classList.remove('on');
-
-// });
-
-// TAB_MENU[1].addEventListener('click', function () {
-//     TAB_CONTENT[0].classList.remove('on');
-//     TAB_CONTENT[1].classList.add('on');
-//     TAB_CONTENT[2].classList.remove('on');
-
-// });
-
-// TAB_MENU[2].addEventListener('click', function () {
-//     TAB_CONTENT[0].classList.remove('on');
-//     TAB_CONTENT[1].classList.remove('on');
-//     TAB_CONTENT[2].classList.add('on');
-
-// });
-
-TAB_MENU.forEach((it, idx) => {
-    it.addEventListener('click', () => {
-        TAB_MENU.forEach(it => it.classList.remove('on'));
-        TAB_MENU[idx].classList.add('on');
-        TAB_CONTENT.forEach(it => it.classList.remove('on'));
-        TAB_CONTENT[idx].classList.add('on');
-    });
-});
-
-const mainSlide = new Swiper('.mainVisual', {
+const TOP_BANNER_SLIDE_OPTION = {
     loop: true,
-    autoplay: {
-        delay: 2500,
-        disableOnInteraction: false,
+    pagination: {
+        el: ".dots",
+        clickable: true,
     },
-});
+}
 
-const SUB_TEXT = ['제품01', '제품02', '제품03', '제품04', '제품05']
+const TOP_BANNER_SLIDE = new Swiper('.topBanner', TOP_BANNER_SLIDE_OPTION);
 
-const SUB_SLIDE = new Swiper('.subSlide', {
+//gnb
+
+const HD_WRAP = document.querySelector('#header .hdWap');
+
+const HD_WRAP_HANDLER = () => {
+    let SCT = window.scrollY;
+    SCT > 0
+        ? HD_WRAP.classList.add('on')
+        : HD_WRAP.classList.remove('on');
+}
+
+window.addEventListener('scroll', HD_WRAP_HANDLER);
+
+const MAIN_VISUAL_SLIDE_OPTION = {
     loop: true,
     // autoplay: {
     //     delay: 2500,
     //     disableOnInteraction: false,
     // },
+    // navigation: {
+    //     nextEl: "#mainVisual .arrows>div:nth-child(1)",
+    //     prevEl: "#mainVisual .arrows>div:nth-child(2)",
+    // },
+    on: {
+        slideChangeTransitionStart: function () {
+            console.log(this, this.realIndex, MAIN_SLIDE_NAV_LI);
+            let idx = this.realIndex;
+            let total = this.slides.length;
+            MAIN_SLIDE_NAV_LI.forEach(it => it.classList.remove('on'));
+            MAIN_SLIDE_NAV_LI[idx].classList.add('on');
+            MAIN_SLIDE_NUM.innerHTML = `<strong>${idx < 9 ? 0 : ''}${idx + 1}</strong> / <span>${total - 2}</span>`;
+        }
+    }
+}
 
-    slideActiveClass: 'on',
-    pagination: {
-        el: ".dots",
-        clickable: true,
-        renderBullet: function (index, className) {
-            return '<span class="' + className + ' bb">' + SUB_TEXT[index] + "</span>";
-        },
-    },
+const MAIN_VISUAL_SLIDE = new Swiper('.mainSlide', MAIN_VISUAL_SLIDE_OPTION);
+
+const MAIN_VISUAL_SLIDE_ARROWS = document.querySelectorAll('#mainVisual .arrows>div');
+console.log(MAIN_VISUAL_SLIDE_ARROWS[0]);
+
+MAIN_VISUAL_SLIDE_ARROWS[0].addEventListener('click', () => {
+    MAIN_VISUAL_SLIDE.slidePrev();
+});
+MAIN_VISUAL_SLIDE_ARROWS[1].addEventListener('click', () => {
+    MAIN_VISUAL_SLIDE.slideNext();
 });
 
-const LEFT_ARROW = document.querySelector('.sub .xi-arrow-left');
-const RIGHT_ARROW = document.querySelector('.sub .xi-arrow-right');
+//이벤트의 위임... e.target --> 
+
+const MAIN_SLIDE_NAV_HANDLER = e => {
+    e.preventDefault();
+    //console.log(e.target);
+    // for (let i = 0; i < MAIN_SLIDE_NAV_LI.length; i++) {
+    //     MAIN_SLIDE_NAV_LI[i].classList.remove('on')
+    // }
+    const TG = e.target.parentElement;
+    //console.log(MAIN_SLIDE_NAV_LI, [...MAIN_SLIDE_NAV_LI]);
+    const I = [...MAIN_SLIDE_NAV_LI].indexOf(TG);
+    //console.log(I)
+    //$(this).parent().index();
+    //TG.classList.add('on');
+    MAIN_VISUAL_SLIDE.slideTo(I + 1);
+}
 
 
-LEFT_ARROW.addEventListener('click', () => {
-    SUB_SLIDE.slidePrev(4000);
-
-});
-RIGHT_ARROW.addEventListener('click', () => {
-    SUB_SLIDE.slideNext(4000);
-
-});
-
+MAIN_SLIDE_NAV.addEventListener('click', MAIN_SLIDE_NAV_HANDLER)
 
